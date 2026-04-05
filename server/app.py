@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from server.environment import StudentEnvironment
 
-app = FastAPI()
+app = FastAPI(docs_url="/docs", redoc_url="/redoc")
 env = StudentEnvironment()
 
 @app.get("/")
