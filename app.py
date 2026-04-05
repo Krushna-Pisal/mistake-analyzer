@@ -1,15 +1,12 @@
 from fastapi import FastAPI
 from server.environment import StudentEnvironment
-from fastapi import Request
 
 app = FastAPI(docs_url="/docs", redoc_url="/redoc")
 
 env = StudentEnvironment()
 
-
-
 @app.get("/")
-def home(request: Request):
+def home():
     return {"message": "Mistake Analyzer Running"}
 
 @app.get("/health")
