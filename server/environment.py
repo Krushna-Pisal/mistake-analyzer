@@ -5,11 +5,13 @@ class StudentEnvironment:
         self.current_step = 0
         self.last_result = {}
         self.history = []
+        self.performance_scores = []
 
     def reset(self):
         self.current_step = 0
         self.last_result = {}
         self.history = []
+        self.performance_scores = []
 
         return {
             "message": "Environment reset",
@@ -22,68 +24,89 @@ class StudentEnvironment:
         answers = [a.lower().strip() for a in action.get("answers", [])]
 
         if not answers:
-            result = {
+            return {
                 "pattern": "No data",
                 "prediction": "Insufficient data",
                 "suggestion": "Provide valid input",
                 "confidence": 0,
                 "risk_level": "LOW",
                 "reward": 0.0,
-                "trend": "No history"
+                "trend": "No history",
+                "difficulty": "unknown"
             }
-            self.last_result = result
-            return result
 
-        # 🧠 Weighted scoring (AI-like)
+        #  Weighted scoring
         score = {
             "formula": answers.count("formula") * 0.5,
             "calculation": answers.count("calculation") * 0.3,
             "logic": answers.count("logic") * 0.2
         }
 
-        pattern = max(score, key=score.get)
+        #  Multi-pattern detection
+        sorted_patterns = sorted(score.items(), key=lambda x: x[1], reverse=True)
+        primary_pattern = sorted_patterns[0][0]
+        secondary_pattern = sorted_patterns[1][0] if sorted_patterns[1][1] > 0 else None
 
-        # 🧠 Confidence with randomness (AI feel)
-        confidence = int(score[pattern] * 100 + random.randint(-5, 5))
+        #  Confidence with randomness
+        confidence = int(score[primary_pattern] * 100 + random.randint(-5, 5))
         confidence = max(0, min(confidence, 100))
 
-        # 🧠 Prediction
-        prediction = f"High chance of {pattern} mistakes continuing"
+        #  Tracking the performance 
+        self.performance_scores.append(confidence)
 
-        # 🧠 Adaptive suggestion
-        suggestion = f"Focus on improving {pattern} through targeted practice"
-
-        # 🧠 Risk level
-        if confidence >= 60:
-            risk = "HIGH"
-        elif confidence >= 40:
-            risk = "MEDIUM"
+        #  Score improvement
+        if len(self.performance_scores) >= 2:
+            improvement = self.performance_scores[-1] - self.performance_scores[-2]
         else:
-            risk = "LOW"
+            improvement = 0
 
-        # 🧠 Reward (normalized)
+        #  Detecting the trend
+        if improvement > 5:
+            trend = "Improving"
+        elif improvement < -5:
+            trend = "Declining"
+        else:
+            trend = "Stable"
+
+        #  Dynamic difficulty
+        if confidence > 70:
+            difficulty = "Hard"
+        elif confidence > 40:
+            difficulty = "Medium"
+        else:
+            difficulty = "Easy"
+
+        #  Suggestions Personalized
+        if primary_pattern == "formula":
+            suggestion = "Revise core formulas and practice application problems"
+        elif primary_pattern == "calculation":
+            suggestion = "Focus on step-by-step solving to reduce arithmetic mistakes"
+        else:
+            suggestion = "Improve conceptual understanding with theory revision"
+
+        if trend == "Declining":
+            suggestion += " and revisit previous weak areas urgently"
+
+        #  Prediction:
+        prediction = f"Likely continuation of {primary_pattern} errors"
+
+        #  Reward rl
         reward = round(confidence / 100, 2)
 
-        # 🧠 Memory tracking
-        self.history.append(pattern)
-
-        # 🧠 Trend detection
-        if len(self.history) >= 3:
-            if self.history[-1] == self.history[-2]:
-                trend = "Repeated mistakes"
-            else:
-                trend = "Changing pattern"
-        else:
-            trend = "Insufficient data"
+        #  Save data history
+        self.history.append(primary_pattern)
 
         result = {
-            "pattern": pattern,
+            "pattern": primary_pattern,
+            "secondary_pattern": secondary_pattern,
             "prediction": prediction,
             "suggestion": suggestion,
             "confidence": confidence,
-            "risk_level": risk,
+            "risk_level": "HIGH" if confidence >= 60 else "MEDIUM" if confidence >= 40 else "LOW",
             "reward": reward,
-            "trend": trend
+            "trend": trend,
+            "improvement_score": improvement,
+            "difficulty": difficulty
         }
 
         self.last_result = result
@@ -94,5 +117,6 @@ class StudentEnvironment:
         return {
             "current_step": self.current_step,
             "history": self.history,
+            "performance_scores": self.performance_scores,
             "last_result": self.last_result
         }
