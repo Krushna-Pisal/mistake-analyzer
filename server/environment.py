@@ -1,11 +1,15 @@
+import random
+
 class StudentEnvironment:
     def __init__(self):
         self.current_step = 0
         self.last_result = {}
+        self.history = []
 
     def reset(self):
         self.current_step = 0
         self.last_result = {}
+        self.history = []
 
         return {
             "message": "Environment reset",
@@ -24,33 +28,32 @@ class StudentEnvironment:
                 "suggestion": "Provide valid input",
                 "confidence": 0,
                 "risk_level": "LOW",
-                "reward": 0.0
+                "reward": 0.0,
+                "trend": "No history"
             }
             self.last_result = result
             return result
 
-        formula = answers.count("formula")
-        calc = answers.count("calculation")
-        logic = answers.count("logic")
+        # 🧠 Weighted scoring (AI-like)
+        score = {
+            "formula": answers.count("formula") * 0.5,
+            "calculation": answers.count("calculation") * 0.3,
+            "logic": answers.count("logic") * 0.2
+        }
 
-        confidence = min(len(answers) * 20, 100)
+        pattern = max(score, key=score.get)
 
-        if formula >= 2:
-            pattern = "Weak in formulas"
-            reward = 1.0
-        elif calc >= 2:
-            pattern = "Calculation errors"
-            reward = 0.8
-        elif logic >= 2:
-            pattern = "Logical gaps"
-            reward = 0.7
-        else:
-            pattern = "Mixed performance"
-            reward = 0.5
+        # 🧠 Confidence with randomness (AI feel)
+        confidence = int(score[pattern] * 100 + random.randint(-5, 5))
+        confidence = max(0, min(confidence, 100))
 
-        prediction = f"{pattern} likely to continue"
-        suggestion = f"Improve {pattern.lower()} with practice"
+        # 🧠 Prediction
+        prediction = f"High chance of {pattern} mistakes continuing"
 
+        # 🧠 Adaptive suggestion
+        suggestion = f"Focus on improving {pattern} through targeted practice"
+
+        # 🧠 Risk level
         if confidence >= 60:
             risk = "HIGH"
         elif confidence >= 40:
@@ -58,13 +61,29 @@ class StudentEnvironment:
         else:
             risk = "LOW"
 
+        # 🧠 Reward (normalized)
+        reward = round(confidence / 100, 2)
+
+        # 🧠 Memory tracking
+        self.history.append(pattern)
+
+        # 🧠 Trend detection
+        if len(self.history) >= 3:
+            if self.history[-1] == self.history[-2]:
+                trend = "Repeated mistakes"
+            else:
+                trend = "Changing pattern"
+        else:
+            trend = "Insufficient data"
+
         result = {
             "pattern": pattern,
             "prediction": prediction,
             "suggestion": suggestion,
             "confidence": confidence,
             "risk_level": risk,
-            "reward": reward
+            "reward": reward,
+            "trend": trend
         }
 
         self.last_result = result
@@ -74,5 +93,6 @@ class StudentEnvironment:
     def state(self):
         return {
             "current_step": self.current_step,
+            "history": self.history,
             "last_result": self.last_result
         }
