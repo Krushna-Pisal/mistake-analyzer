@@ -1,25 +1,21 @@
 import requests
 
-BASE_URL = "http://localhost:8000"
+BASE = "https://krushnapisal-mistake-analyzer.hf.space"
 
-def run():
-    print("[START]")
+print("START")
 
-    # Reset environment
-    r = requests.post(f"{BASE_URL}/reset")
-    print("[STEP] Reset:", r.json())
+# reset
+requests.post(BASE + "/reset")
 
-    data = {
-        "answers": ["formula", "formula", "calculation"]
-    }
+# step
+data = {
+    "answers": ["formula", "formula", "logic"],
+    "task": "easy"
+}
 
-    print("[STEP] Sending input:", data)
+res = requests.post(BASE + "/step", json=data)
 
-    res = requests.post(f"{BASE_URL}/step", json=data)
+print("STEP RESULT:", res.json())
+print("SCORE:", res.json().get("reward"))
 
-    print("[STEP] Response:", res.json())
-
-    print("[END]")
-
-if __name__ == "__main__":
-    run()
+print("END")

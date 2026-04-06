@@ -1,0 +1,21 @@
+name: mistake-analyzer-env
+description: AI environment for student mistake analysis
+
+actions:
+  - name: answers
+    type: list[string]
+  - name: task
+    type: string
+
+observations:
+  - name: pattern
+    type: string
+  - name: confidence
+    type: int
+  - name: reward
+    type: float
+
+tasks:
+  - name: easy
+  - name: medium
+  - name: hard
