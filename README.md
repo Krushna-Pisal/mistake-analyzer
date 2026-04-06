@@ -11,3 +11,4 @@ pinned: false
 # AI Mistake Analyzer
 
 Analyzes student mistakes and provides learning insights.
+This project simulates an AI-driven adaptive learning environment using state tracking, weighted scoring, and reinforcement learning principles.
