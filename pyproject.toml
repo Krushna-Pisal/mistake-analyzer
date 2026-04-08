@@ -1,0 +1,22 @@
+[project]
+name = "mistake-analyzer"
+version = "0.1.0"
+description = "Mistake Analyzer Hackathon Project"
+authors = [
+    { name="Krushna Pisal" }
+]
+
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "requests",
+    "torch",
+    "transformers"
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
