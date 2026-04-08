@@ -11,12 +11,16 @@ dependencies = [
     "uvicorn",
     "requests",
     "torch",
-    "transformers"
+    "transformers",
+    "openenv-core>=0.2.0"
 ]
 
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project.scripts]
+start = "server.app:app"
 
 [tool.setuptools.packages.find]
 where = ["."]
