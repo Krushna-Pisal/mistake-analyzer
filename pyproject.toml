@@ -1,4 +1,6 @@
 [project]
+[project.scripts]
+server = "server.app:app"
 name = "mistake-analyzer"
 version = "0.1.0"
 description = "Mistake Analyzer Hackathon Project"
