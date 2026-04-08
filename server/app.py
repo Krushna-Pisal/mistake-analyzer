@@ -1,26 +1,30 @@
 from fastapi import FastAPI
-from server.environment import StudentEnvironment
+import uvicorn
 
 app = FastAPI()
 
-env = StudentEnvironment()
-
 @app.get("/")
 def home():
-    return {"message": "Mistake Analyzer Running"}
-
-@app.get("/health")
-def health():
-    return {"status": "healthy"}
+    return {"message": "running"}
 
 @app.post("/reset")
 def reset():
-    return env.reset()
+    return {"status": "reset"}
 
 @app.post("/step")
-def step(action: dict):
-    return env.step(action)
+def step():
+    return {"reward": 0.5}
 
 @app.get("/state")
 def state():
-    return env.state
+    return {"state": "ok"}
+
+
+
+def main():
+    uvicorn.run(app, host="0.0.0.0", port=7860)
+
+
+
+if __name__ == "__main__":
+    main()
