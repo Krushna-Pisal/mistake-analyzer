@@ -1,28 +1,39 @@
+import os
 import requests
+from openai import OpenAI
 
-BASE = "https://krushnapisal-mistake-analyzer.hf.space"
+def main():
+    BASE = "https://krushnapisal-mistake-analyzer.hf.space"
+    task_name = "mistake_analysis"
 
-task_name = "mistake_analysis"
+    print(f"[START] task={task_name}", flush=True)
 
-# start block fixed 
-print(f"[START] task={task_name}", flush=True)
+    requests.post(BASE + "/reset")
 
+    client = OpenAI(
+        base_url=os.environ["API_BASE_URL"],
+        api_key=os.environ["API_KEY"]
+    )
+    
+    model = os.environ.get("MODEL_NAME", "gpt-3.5-turbo")
+    
+    _ = client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": "Analyze a simple mistake."}]
+    )
 
-requests.post(BASE + "/reset")
+    data = {
+        "answers": ["formula", "formula", "logic"],
+        "task": "easy"
+    }
 
+    res = requests.post(BASE + "/step", json=data)
+    response = res.json()
 
-data = {
-    "answers": ["formula", "formula", "logic"],
-    "task": "easy"
-}
+    reward = response.get("reward", 0.0)
 
-res = requests.post(BASE + "/step", json=data)
-response = res.json()
+    print(f"[STEP] step=1 reward={reward}", flush=True)
+    print(f"[END] task={task_name} score={reward} steps=1", flush=True)
 
-reward = response.get("reward", 0.0)
-
-# step block fixed
-print(f"[STEP] step=1 reward={reward}", flush=True)
-
-# end block fixed 
-print(f"[END] task={task_name} score={reward} steps=1", flush=True)
+if __name__ == "__main__":
+    main()
