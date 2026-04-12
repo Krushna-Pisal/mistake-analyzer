@@ -16,6 +16,17 @@ observations:
     type: float
 
 tasks:
-  - name: easy
-  - name: medium
-  - name: hard
+  - name: error_detection
+    input: "He go to school"
+    expected_output: true
+    grader: grade_detection
+
+  - name: grammar_correction
+    input: "She don't like the homeworks"
+    expected_output: "She doesn't like the homework"
+    grader: grade_correction
+
+  - name: error_classification
+    input: "They was playing in the park"
+    expected_output: "subject-verb agreement"
+    grader: grade_classification
