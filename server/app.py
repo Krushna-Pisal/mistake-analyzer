@@ -79,9 +79,22 @@ def grade_explanation(predicted, expected) -> float:
     return round(matched / len(expected_keywords), 4)
 
 
+# ---------------------------------------------------------------------------
+# GRADER MAP — resolves grader name strings back to callable functions
+# ---------------------------------------------------------------------------
+
+grader_map = {
+    "grade_detection":     grade_detection,
+    "grade_correction":    grade_correction,
+    "grade_classification": grade_classification,
+    "grade_explanation":   grade_explanation,
+}
+
 # ===========================================================================
 # GLOBAL TASKS LIST  — defined AFTER graders so references are valid
 # Must be at module level, NOT inside any function.
+# Grader values are STRINGS so a static validator can detect them without
+# executing Python.  Use grader_map[task["grader"]] to call them at runtime.
 # ===========================================================================
 
 tasks = [
@@ -92,8 +105,8 @@ tasks = [
     {
         "name": "error_detection",
         "input": "He go to school every day.",
-        "expected_output": True,          # sentence HAS an error
-        "grader": grade_detection,
+        "expected_output": True,
+        "grader": "grade_detection",
     },
 
     # ------------------------------------------------------------------
@@ -104,7 +117,7 @@ tasks = [
         "name": "grammar_correction",
         "input": "She don't like the homeworks.",
         "expected_output": "She doesn't like the homework.",
-        "grader": grade_correction,
+        "grader": "grade_correction",
     },
 
     # ------------------------------------------------------------------
@@ -115,7 +128,7 @@ tasks = [
         "name": "error_classification",
         "input": "They was playing in the park.",
         "expected_output": "subject-verb agreement",
-        "grader": grade_classification,
+        "grader": "grade_classification",
     },
 
     # ------------------------------------------------------------------
@@ -126,7 +139,7 @@ tasks = [
         "name": "error_explanation",
         "input": "I has been waiting for an hour.",
         "expected_output": "subject-verb agreement error: 'I' requires 'have', not 'has'",
-        "grader": grade_explanation,
+        "grader": "grade_explanation",
     },
 ]
 
@@ -136,7 +149,7 @@ tasks = [
 print("TASKS LOADED:", tasks, flush=True)
 print(f"[INFO] Total tasks registered: {len(tasks)}", flush=True)
 for _t in tasks:
-    print(f"  - {_t['name']} | grader={_t['grader'].__name__}", flush=True)
+    print(f"  - {_t['name']} | grader={_t['grader']}", flush=True)
 
 
 # ===========================================================================
